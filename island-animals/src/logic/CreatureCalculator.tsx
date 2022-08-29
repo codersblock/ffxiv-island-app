@@ -241,7 +241,7 @@ export function CreatureCalculator(props: Props) {
         let cycle = 0;
         while (cycle < 620) {
             const weather: WeatherType = WeatherFinder.getWeather(weatherStartTime.toMillis())
-            Object.values(creatures).forEach(creature => {
+            for (const creature of Object.values(creatures)) {
                 const creatureSpawn: SpawnInfo | undefined = creature.creatureWillSpawnInWeatherWindow(weatherStartTime, weather)
                 if (creatureSpawn !== undefined) {
                     creatureSpawns = {
@@ -249,7 +249,7 @@ export function CreatureCalculator(props: Props) {
                         [creature.name]: [...creatureSpawns[creature.name], creatureSpawn]
                     }
                 }
-            })
+            }
             weatherStartTime = weatherStartTime.plus({seconds: EORZEA_HOUR_IN_SECONDS * 8})
             ++cycle;
         }

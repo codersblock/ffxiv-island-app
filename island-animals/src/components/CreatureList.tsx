@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, AccordionSummary, Typography, AccordionDetails, styled } from "@mui/material";
+import { Accordion, AccordionSummary, Box, Typography, AccordionDetails, styled } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { creatureSpawnsAtom, creatureSpawnsLoadedAtom } from "../state/atoms";
 import { DateTime } from "luxon";
@@ -8,6 +8,15 @@ import { DateTime } from "luxon";
 export default function CreatureList() {
     const creatureSpawns = useRecoilValue(creatureSpawnsAtom);
     const creatureSpawnsLoaded = useRecoilValue(creatureSpawnsLoadedAtom);
+
+    const AccordionContainer = styled("div")({
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: "15px"
+    })
 
     const SummaryDiv = styled("div")({
         width: "50%",
@@ -18,9 +27,9 @@ export default function CreatureList() {
 
     if (creatureSpawnsLoaded) {
         return (
-            <>
+            <AccordionContainer>
                 {Object.keys(creatureSpawns).map(creatureName => 
-                    <Accordion>
+                    <Accordion sx={{width: "80%"}}>
                         <AccordionSummary >
                             <SummaryDiv>
                                 <Typography>{`${creatureName}`}</Typography>
@@ -28,15 +37,17 @@ export default function CreatureList() {
                             </SummaryDiv>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {creatureSpawns[creatureName].map(spawn => 
-                                <Typography>
-                                    {`${spawn.startTime.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}`}
-                                </Typography>
-                            )}
+                            <Box sx={{maxHeight: "150px", overflowY: "auto"}}>
+                                {creatureSpawns[creatureName].map(spawn => 
+                                    <Typography>
+                                        {`${spawn.startTime.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}`}
+                                    </Typography>
+                                )}
+                            </Box>
                         </AccordionDetails>
                     </Accordion>    
                 )}
-            </>
+            </AccordionContainer>
         )
 
     } else {
