@@ -50,8 +50,8 @@ export class WeatherFinder {
         }
     }
 
-    static getCurrentWeatherStartTime(): DateTime {
-        const secondsSinceEpoch = DateTime.now().toMillis() / 1000;
+    static getPreviousWeatherCycleStartTime(): DateTime {
+        const secondsSinceEpoch = (DateTime.now().toMillis() / 1000) - (EORZEA_HOUR_IN_SECONDS * 8);
         const currentEorzeaHour = (secondsSinceEpoch / EORZEA_HOUR_IN_SECONDS) % 24;
         const weatherCycleStart = currentEorzeaHour - (currentEorzeaHour % 8);
         return DateTime.fromMillis((secondsSinceEpoch - (EORZEA_HOUR_IN_SECONDS * (currentEorzeaHour - weatherCycleStart))) * 1000)

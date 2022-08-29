@@ -28,9 +28,9 @@ export interface SpawnInfo {
 export class Creature {
     public readonly name: string;
     public readonly type: CreatureType;
-    coordinates: Coordinates;
-    requiredWeather: WeatherType;
-    requiredTimeEorzea: TimeSpan;
+    public coordinates: Coordinates;
+    public requiredWeather: WeatherType;
+    public requiredTimeEorzea: TimeSpan;
 
     constructor(name: string, type: CreatureType, coordinates: Coordinates, requiredWeather: WeatherType, requiredTimeEorzea: TimeSpan) {
         this.name = name;
@@ -53,16 +53,21 @@ export class Creature {
             if (this.requiredWeather === WeatherType.ANY || this.requiredWeather === weather) {
                 const eorzeaStartHour = allDaySpawn ? eorzeaWeatherStartHour : this.requiredTimeEorzea.startTimeHour;
                 const eorzeaEndHour = allDaySpawn ? eorzeaWeatherStartHour + 8 : (
-                    eorzeaWeatherStartHour + 8 < this.requiredTimeEorzea.endTimeHour ?
+                    (this.requiredWeather !== WeatherType.ANY && (eorzeaWeatherStartHour + 8 < this.requiredTimeEorzea.endTimeHour)) ?
                         eorzeaWeatherStartHour + 8 :
                         this.requiredTimeEorzea.endTimeHour
                 )
-                return {
+
+                const spawnInfo = {
                     weather,
                     eorzeaStartHour,
                     eorzeaEndHour,
                     startTime: this.calculateEarthHour(weatherCycleStartTime, eorzeaWeatherStartHour, eorzeaStartHour),
                     endTime: this.calculateEarthHour(weatherCycleStartTime, eorzeaWeatherStartHour, eorzeaEndHour)
+                }
+
+                if (spawnInfo.endTime > DateTime.now()) {
+                    return spawnInfo
                 }
             }
         }

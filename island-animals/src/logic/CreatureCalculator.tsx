@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { WeatherFinder, WeatherType } from "./WeatherFinder";
 import { Creature, CreatureType, SpawnInfo } from "./Creature"
-import { useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { creatureSpawnsLoadedAtom, creatureSpawnsAtom } from "../state/atoms"
 import { useEffect } from "react";
 
@@ -11,7 +11,7 @@ export const EORZEA_HOUR_IN_SECONDS = 175
 interface Props {
     children?: React.ReactNode
 }
-const creatures = {
+export const creatures: {[key: string]: Creature} = {
     "Glyptodon": new Creature(
         "Glyptodon",
         CreatureType.MEDIUM,
@@ -220,22 +220,35 @@ const creatures = {
             endTimeHour: 24
         }
     ),
+    "Paissa": new Creature(
+        "Paissa",
+        CreatureType.MEDIUM,
+        {
+            x: 25,
+            y: 28
+        },
+        WeatherType.FAIR_SKIES,
+        {
+            startTimeHour: 12,
+            endTimeHour: 15
+        }
+    )
 }
 
 export function CreatureCalculator(props: Props) {
-    const setCalculationComplete = useSetRecoilState(creatureSpawnsLoadedAtom);
-    const setCreatureSpawns = useSetRecoilState(creatureSpawnsAtom);
+    const [calculationComplete, setCalculationComplete] = useRecoilState(creatureSpawnsLoadedAtom);
+    const [creatureSpawns, setCreatureSpawns] = useRecoilState(creatureSpawnsAtom);
 
     useEffect(() => {
-        let creatureSpawns: {[key: string]: SpawnInfo[]} = {}
+        let newCreatureSpawns: {[key: string]: SpawnInfo[]} = {}
         for (const creature of Object.values(creatures)) {
-            creatureSpawns = {
-                ...creatureSpawns,
+            newCreatureSpawns = {
+                ...newCreatureSpawns,
                 [creature.name]: []
             }
         }
 
-        let weatherStartTime: DateTime = WeatherFinder.getCurrentWeatherStartTime()
+        let weatherStartTime: DateTime = WeatherFinder.getPreviousWeatherCycleStartTime()
 
         //620 weather cycles is a little over 5 earth days
         let cycle = 0;
@@ -244,9 +257,9 @@ export function CreatureCalculator(props: Props) {
             for (const creature of Object.values(creatures)) {
                 const creatureSpawn: SpawnInfo | undefined = creature.creatureWillSpawnInWeatherWindow(weatherStartTime, weather)
                 if (creatureSpawn !== undefined) {
-                    creatureSpawns = {
-                        ...creatureSpawns,
-                        [creature.name]: [...creatureSpawns[creature.name], creatureSpawn]
+                    newCreatureSpawns = {
+                        ...newCreatureSpawns,
+                        [creature.name]: [...newCreatureSpawns[creature.name], creatureSpawn]
                     }
                 }
             }
@@ -254,9 +267,29 @@ export function CreatureCalculator(props: Props) {
             ++cycle;
         }
 
-        setCreatureSpawns(creatureSpawns)
+        setCreatureSpawns(newCreatureSpawns)
         setCalculationComplete(true)
     }, [])
+
+    useEffect(() => {
+        const refresh = setInterval(() => {
+            let newCreatureSpawns = {...creatureSpawns};
+            let creaturesUpdated = false;
+            for (const creature of Object.values(creatures)) {
+                if (calculationComplete && newCreatureSpawns[creature.name] && newCreatureSpawns[creature.name].length > 0) {
+                    if (DateTime.now() > newCreatureSpawns[creature.name][0].endTime) {
+                        newCreatureSpawns[creature.name] = newCreatureSpawns[creature.name].slice(1)
+                        creaturesUpdated = true
+                    }
+                }
+            }
+            if (creaturesUpdated) {
+                setCreatureSpawns(newCreatureSpawns)
+            }
+        }, 1000)
+
+        return () => clearInterval(refresh)
+    }, [creatureSpawns, calculationComplete])
 
     return <> {props.children} </>
 }

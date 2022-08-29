@@ -1,5 +1,7 @@
 import React from 'react';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { green } from "@mui/material/colors"
+
 interface Props {
     children?: React.ReactNode
 }
@@ -14,7 +16,7 @@ export default function IslandThemeProvider(props: Props) {
         },
         palette: {
             primary: {
-                main: '#00db6a',
+                main: green[500],
                 light: '#5FA463',
                 dark: '#27632A',
                 contrastText: '#000000',

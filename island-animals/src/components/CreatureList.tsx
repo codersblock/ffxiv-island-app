@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Accordion, AccordionSummary, Box, Typography, AccordionDetails, styled } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { creatureSpawnsAtom, creatureSpawnsLoadedAtom } from "../state/atoms";
 import { DateTime } from "luxon";
+import { green } from "@mui/material/colors"
+import { creatures } from "../logic/CreatureCalculator";
 
 
 export default function CreatureList() {
     const creatureSpawns = useRecoilValue(creatureSpawnsAtom);
     const creatureSpawnsLoaded = useRecoilValue(creatureSpawnsLoadedAtom);
+    const [creatureNamesBySpawnTime, setCreatureNamesBySpawnTime] = useState<string[]>([])
 
     const AccordionContainer = styled("div")({
         width: "100%",
@@ -19,27 +22,51 @@ export default function CreatureList() {
     })
 
     const SummaryDiv = styled("div")({
-        width: "50%",
+        width: "100%",
         display: "flex", 
         flexDirection: "row", 
-        justifyContent: "space-between"
+        justifyContent: "flex-start"
     })
+
+    useEffect(() => {
+        setCreatureNamesBySpawnTime(
+            Object.keys(creatureSpawns).sort((a, b) => {
+                if (creatureSpawns[b] && creatureSpawns[b].length > 0) {
+                    if (creatureSpawns[a] && creatureSpawns[a].length > 0) {
+                        if (creatureSpawns[a][0].startTime > creatureSpawns[b][0].startTime) {
+                            return 1
+                        } else {
+                            return -1
+                        }
+                    } else {
+                        return -1
+                    }
+                } else {
+                    return -1
+                }
+            })
+        )
+    }, [creatureSpawns])
 
     if (creatureSpawnsLoaded) {
         return (
             <AccordionContainer>
-                {Object.keys(creatureSpawns).map(creatureName => 
-                    <Accordion sx={{width: "80%"}}>
-                        <AccordionSummary >
-                            <SummaryDiv>
-                                <Typography>{`${creatureName}`}</Typography>
-                                <Typography>{`next spawn: ${creatureSpawns[creatureName][0]?.startTime.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}`}</Typography>
+                {creatureNamesBySpawnTime.map(creatureName => 
+                    <Accordion key={creatureName} sx={{width: "80%"}}>
+                        <AccordionSummary sx={(theme) => ({
+                            backgroundColor: (creatureSpawns[creatureName][0]?.startTime < DateTime.now() && creatureSpawns[creatureName][0].endTime > DateTime.now()) ? green[200] : theme.palette.background.paper,
+                        })}>
+                            <SummaryDiv >
+                                <Typography sx={{width: "20%"}}>{`${creatureName}`}</Typography>
+                                <Typography sx={{width: "9%"}}>{`[${creatures[creatureName].coordinates.x}, ${creatures[creatureName].coordinates.y}]`}</Typography>
+                                <Typography sx={{width: "15%"}}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString({weekday: "short", month: "short", day: "2-digit"})}`}</Typography>
+                                <Typography sx={{width: "20%"}}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString(DateTime.TIME_SIMPLE)} to ${creatureSpawns[creatureName][0]?.endTime.toLocaleString(DateTime.TIME_SIMPLE)}`}</Typography>
                             </SummaryDiv>
                         </AccordionSummary>
                         <AccordionDetails>
                             <Box sx={{maxHeight: "150px", overflowY: "auto"}}>
                                 {creatureSpawns[creatureName].map(spawn => 
-                                    <Typography>
+                                    <Typography key={spawn.startTime.toISO()}>
                                         {`${spawn.startTime.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}`}
                                     </Typography>
                                 )}
