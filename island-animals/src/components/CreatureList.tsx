@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Accordion, AccordionSummary, Box, Typography, AccordionDetails, styled } from "@mui/material";
+import { Accordion, AccordionSummary, Box, Typography, AccordionDetails, styled, Tooltip } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { creatureSpawnsAtom, creatureSpawnsLoadedAtom } from "../state/atoms";
 import { DateTime } from "luxon";
-import { green } from "@mui/material/colors"
+import { green, red } from "@mui/material/colors"
 import { creatures } from "../logic/CreatureCalculator";
+import WarningIcon from '@mui/icons-material/Warning';
+import { fontWeight } from "@mui/system";
 
 
 export default function CreatureList() {
@@ -27,6 +29,14 @@ export default function CreatureList() {
         flexDirection: "row", 
         justifyContent: "flex-start"
     })
+
+    const buggedCreatures = [
+        "Goobue",
+        "Twinklefleece",
+        "Alligator",
+        "Paissa"
+
+    ]
 
     useEffect(() => {
         setCreatureNamesBySpawnTime(
@@ -61,6 +71,13 @@ export default function CreatureList() {
                                 <Typography sx={{width: "9%"}}>{`[${creatures[creatureName].coordinates.x}, ${creatures[creatureName].coordinates.y}]`}</Typography>
                                 <Typography sx={{width: "15%"}}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString({weekday: "short", month: "short", day: "2-digit"})}`}</Typography>
                                 <Typography sx={{width: "20%"}}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString(DateTime.TIME_SIMPLE)} to ${creatureSpawns[creatureName][0]?.endTime.toLocaleString(DateTime.TIME_SIMPLE)}`}</Typography>
+                                {buggedCreatures.includes(creatureName) && (<>
+                                    <Tooltip title="A bug has been identified with this creature that requires you to be off the island when the weather changes in order for it to spawn.  For the best chance to spawn this creature, leave the island at the indicated time, and return only when the spawn window becomes active.">
+                                        <WarningIcon sx={{width: "5%"}}color="error"/>
+                                    </Tooltip>
+                                    <Typography sx={{width: "20%", fontWeight:"bold"}}>{`LEAVE THE ISLAND BY ${creatureSpawns[creatureName][0].weatherCycleStartTime.toLocaleString(DateTime.TIME_SIMPLE)}`}</Typography>
+                                </>
+                                )}
                             </SummaryDiv>
                         </AccordionSummary>
                         <AccordionDetails>

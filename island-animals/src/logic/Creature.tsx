@@ -22,7 +22,8 @@ export interface SpawnInfo {
     endTime: DateTime,
     eorzeaStartHour: number,
     eorzeaEndHour: number,
-    weather: WeatherType
+    weather: WeatherType,
+    weatherCycleStartTime: DateTime
 }
 
 export class Creature {
@@ -63,7 +64,8 @@ export class Creature {
                     eorzeaStartHour,
                     eorzeaEndHour,
                     startTime: this.calculateEarthHour(weatherCycleStartTime, eorzeaWeatherStartHour, eorzeaStartHour),
-                    endTime: this.calculateEarthHour(weatherCycleStartTime, eorzeaWeatherStartHour, eorzeaEndHour)
+                    endTime: this.calculateEarthHour(weatherCycleStartTime, eorzeaWeatherStartHour, eorzeaEndHour),
+                    weatherCycleStartTime
                 }
 
                 if (spawnInfo.endTime > DateTime.now()) {
