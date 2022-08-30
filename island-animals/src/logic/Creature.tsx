@@ -48,16 +48,19 @@ export class Creature {
 
         if (
             allDaySpawn || 
-            (eorzeaWeatherStartHour <= this.requiredTimeEorzea.startTimeHour &&
-            (eorzeaWeatherStartHour + 8) > this.requiredTimeEorzea.startTimeHour)
+            (eorzeaWeatherStartHour >= this.requiredTimeEorzea.startTimeHour && eorzeaWeatherStartHour < this.requiredTimeEorzea.endTimeHour) ||
+            (this.requiredWeather !== WeatherType.ANY && (eorzeaWeatherStartHour + 8) > this.requiredTimeEorzea.startTimeHour && (eorzeaWeatherStartHour + 8) <= this.requiredTimeEorzea.endTimeHour) ||
+            (eorzeaWeatherStartHour <= this.requiredTimeEorzea.startTimeHour && (eorzeaWeatherStartHour + 8) >= this.requiredTimeEorzea.endTimeHour)
         ) {
             if (this.requiredWeather === WeatherType.ANY || this.requiredWeather === weather) {
-                const eorzeaStartHour = allDaySpawn ? eorzeaWeatherStartHour : this.requiredTimeEorzea.startTimeHour;
-                const eorzeaEndHour = allDaySpawn ? eorzeaWeatherStartHour + 8 : (
+                const eorzeaStartHour = allDaySpawn ? eorzeaWeatherStartHour : 
+                    (this.requiredWeather !== WeatherType.ANY && (eorzeaWeatherStartHour > this.requiredTimeEorzea.startTimeHour)) ? 
+                        eorzeaWeatherStartHour :
+                        this.requiredTimeEorzea.startTimeHour
+                const eorzeaEndHour = allDaySpawn ? eorzeaWeatherStartHour + 8 :
                     (this.requiredWeather !== WeatherType.ANY && (eorzeaWeatherStartHour + 8 < this.requiredTimeEorzea.endTimeHour)) ?
                         eorzeaWeatherStartHour + 8 :
                         this.requiredTimeEorzea.endTimeHour
-                )
 
                 const spawnInfo = {
                     weather,

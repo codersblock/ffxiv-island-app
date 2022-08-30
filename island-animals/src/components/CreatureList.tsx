@@ -25,17 +25,22 @@ export default function CreatureList() {
     const SummaryDiv = styled("div")({
         width: "100%",
         display: "flex", 
-        flexDirection: "row", 
+        flexDirection: "row",
         justifyContent: "flex-start"
     })
 
-    const SpawnConditionsDiv = styled("div")({
+    const SpawnConditionsDiv = styled("div")((props) => ({
         width: "100%",
         display: "flex",
-        flexDirection: "row",
         flexWrap: "nowrap",
-        justifyContent: "space-between"
-    })
+        justifyContent: "space-between",
+        [props.theme.breakpoints.down("sm")]: {
+            flexDirection: "column"
+        },
+        [props.theme.breakpoints.up("md")]: {
+            flexDirection: "row"
+        },
+    }))
 
     const buggedCreatures = [
         "Goobue",
@@ -73,37 +78,37 @@ export default function CreatureList() {
                             backgroundColor: (creatureSpawns[creatureName][0]?.startTime < DateTime.now() && creatureSpawns[creatureName][0].endTime > DateTime.now()) ? green[200] : theme.palette.background.paper,
                         })}>
                             <SummaryDiv >
-                                <Typography sx={{width: "20%"}}>{`${creatureName}`}</Typography>
-                                <Typography sx={{width: "10%"}}>{`${creatures[creatureName].type}`}</Typography>
-                                <Typography sx={{width: "9%"}}>{`[${creatures[creatureName].coordinates.x}, ${creatures[creatureName].coordinates.y}]`}</Typography>
-                                <Typography sx={{width: "12%"}}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString({weekday: "short", month: "short", day: "2-digit"})}`}</Typography>
-                                <Typography sx={{width: "20%"}}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString(DateTime.TIME_SIMPLE)} to ${creatureSpawns[creatureName][0]?.endTime.toLocaleString(DateTime.TIME_SIMPLE)}`}</Typography>
+                                <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { width: "50%"}, width: "20%"})}>{`${creatureName}`}</Typography>
+                                <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { display: "none" }, width: "10%"})}>{`${creatures[creatureName].type}`}</Typography>
+                                <Typography sx={(theme) => ({[theme.breakpoints.down('md')]: { display: "none" }, width: "9%"})}>{`[${creatures[creatureName].coordinates.x}, ${creatures[creatureName].coordinates.y}]`}</Typography>
+                                <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { display: "none" }, width: "12%"})}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString({weekday: "short", month: "short", day: "2-digit"})}`}</Typography>
+                                <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { display: "none" }, width: "20%"})}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString(DateTime.TIME_SIMPLE)} to ${creatureSpawns[creatureName][0]?.endTime.toLocaleString(DateTime.TIME_SIMPLE)}`}</Typography>
                                 {buggedCreatures.includes(creatureName) && (<>
                                     <Tooltip title="A bug has been identified with this creature that requires you to be off the island when the weather changes in order for it to spawn.  For the best chance to spawn this creature, leave the island at the indicated time, and return only when the spawn window becomes active.">
                                         <WarningIcon sx={{width: "5%"}}color="error"/>
                                     </Tooltip>
-                                    <Typography sx={{width: "20%", fontWeight:"bold"}}>{`LEAVE THE ISLAND BY ${creatureSpawns[creatureName][0].weatherCycleStartTime.toLocaleString(DateTime.TIME_SIMPLE)}`}</Typography>
+                                    <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { display: "none" }, width: "20%", fontWeight:"bold"})}>{`LEAVE THE ISLAND BY ${creatureSpawns[creatureName][0]?.weatherCycleStartTime.toLocaleString(DateTime.TIME_SIMPLE)}`}</Typography>
                                 </>
                                 )}
                             </SummaryDiv>
                         </AccordionSummary>
                         <AccordionDetails>
                             <SpawnConditionsDiv>
-                                <Card sx={{backgroundColor: grey[300], marginRight: "7px", width: "33%"}}>
+                                <Card sx={{backgroundColor: grey[300], marginRight: "7px", marginTop: "7px", flexGrow: 1}}>
                                     <CardContent>
-                                        <Typography variant="h6">Spawn Time Start (ET)</Typography>
+                                        <Typography sx={{fontWeight: "bold"}}>Start (ET)</Typography>
                                         <Typography>{`${creatures[creatureName].requiredTimeEorzea.startTimeHour}:00`}</Typography>
                                     </CardContent>
                                 </Card>
-                                <Card sx={{backgroundColor: grey[300], marginRight: "7px", width: "33%"}}>
+                                <Card sx={{backgroundColor: grey[300], marginRight: "7px", marginTop: "7px", flexGrow: 1}}>
                                     <CardContent>
-                                        <Typography variant="h6">Spawn Time End (ET)</Typography>
+                                        <Typography sx={{fontWeight: "bold"}}>End (ET)</Typography>
                                         <Typography>{`${creatures[creatureName].requiredTimeEorzea.endTimeHour}:00`}</Typography>
                                     </CardContent>
                                 </Card>
-                                <Card sx={{backgroundColor: grey[300], marginRight: "7px", width: "33%"}}>
+                                <Card sx={{backgroundColor: grey[300], marginRight: "7px", marginTop: "7px", flexGrow: 1}}>
                                     <CardContent>
-                                        <Typography variant="h6">Required Weather</Typography>
+                                        <Typography sx={{fontWeight: "bold"}}>Weather</Typography>
                                         <Typography>{`${creatures[creatureName].requiredWeather}`}</Typography>
                                     </CardContent>
                                 </Card>
