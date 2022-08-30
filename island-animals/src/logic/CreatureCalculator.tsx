@@ -170,7 +170,7 @@ export const creatures: {[key: string]: Creature} = {
     ),
     "Black Chocobo": new Creature(
         "Black Chocobo",
-        CreatureType.LARGE,
+        CreatureType.MEDIUM,
         {
             x: 13,
             y: 11

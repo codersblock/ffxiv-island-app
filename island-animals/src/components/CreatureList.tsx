@@ -68,8 +68,9 @@ export default function CreatureList() {
                         })}>
                             <SummaryDiv >
                                 <Typography sx={{width: "20%"}}>{`${creatureName}`}</Typography>
+                                <Typography sx={{width: "10%"}}>{`${creatures[creatureName].type}`}</Typography>
                                 <Typography sx={{width: "9%"}}>{`[${creatures[creatureName].coordinates.x}, ${creatures[creatureName].coordinates.y}]`}</Typography>
-                                <Typography sx={{width: "15%"}}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString({weekday: "short", month: "short", day: "2-digit"})}`}</Typography>
+                                <Typography sx={{width: "12%"}}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString({weekday: "short", month: "short", day: "2-digit"})}`}</Typography>
                                 <Typography sx={{width: "20%"}}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString(DateTime.TIME_SIMPLE)} to ${creatureSpawns[creatureName][0]?.endTime.toLocaleString(DateTime.TIME_SIMPLE)}`}</Typography>
                                 {buggedCreatures.includes(creatureName) && (<>
                                     <Tooltip title="A bug has been identified with this creature that requires you to be off the island when the weather changes in order for it to spawn.  For the best chance to spawn this creature, leave the island at the indicated time, and return only when the spawn window becomes active.">
