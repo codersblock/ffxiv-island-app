@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Accordion, AccordionSummary, Box, Typography, AccordionDetails, styled, Tooltip } from "@mui/material";
+import { Accordion, AccordionSummary, Box, Typography, AccordionDetails, styled, Tooltip, CardContent, Card, CardHeader, CssBaseline } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { creatureSpawnsAtom, creatureSpawnsLoadedAtom } from "../state/atoms";
 import { DateTime } from "luxon";
-import { green, red } from "@mui/material/colors"
+import { green, grey} from "@mui/material/colors"
 import { creatures } from "../logic/CreatureCalculator";
 import WarningIcon from '@mui/icons-material/Warning';
-import { fontWeight } from "@mui/system";
-
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export default function CreatureList() {
     const creatureSpawns = useRecoilValue(creatureSpawnsAtom);
@@ -30,12 +29,19 @@ export default function CreatureList() {
         justifyContent: "flex-start"
     })
 
+    const SpawnConditionsDiv = styled("div")({
+        width: "100%",
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "nowrap",
+        justifyContent: "space-between"
+    })
+
     const buggedCreatures = [
         "Goobue",
         "Twinklefleece",
         "Alligator",
         "Paissa"
-
     ]
 
     useEffect(() => {
@@ -63,7 +69,7 @@ export default function CreatureList() {
             <AccordionContainer>
                 {creatureNamesBySpawnTime.map(creatureName => 
                     <Accordion key={creatureName} sx={{width: "80%"}}>
-                        <AccordionSummary sx={(theme) => ({
+                        <AccordionSummary expandIcon={<ExpandMoreIcon/>} sx={(theme) => ({
                             backgroundColor: (creatureSpawns[creatureName][0]?.startTime < DateTime.now() && creatureSpawns[creatureName][0].endTime > DateTime.now()) ? green[200] : theme.palette.background.paper,
                         })}>
                             <SummaryDiv >
@@ -82,13 +88,37 @@ export default function CreatureList() {
                             </SummaryDiv>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Box sx={{maxHeight: "150px", overflowY: "auto"}}>
-                                {creatureSpawns[creatureName].map(spawn => 
-                                    <Typography key={spawn.startTime.toISO()}>
-                                        {`${spawn.startTime.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}`}
-                                    </Typography>
-                                )}
-                            </Box>
+                            <SpawnConditionsDiv>
+                                <Card sx={{backgroundColor: grey[300], marginRight: "7px", width: "33%"}}>
+                                    <CardContent>
+                                        <Typography variant="h6">Spawn Time Start (ET)</Typography>
+                                        <Typography>{`${creatures[creatureName].requiredTimeEorzea.startTimeHour}:00`}</Typography>
+                                    </CardContent>
+                                </Card>
+                                <Card sx={{backgroundColor: grey[300], marginRight: "7px", width: "33%"}}>
+                                    <CardContent>
+                                        <Typography variant="h6">Spawn Time End (ET)</Typography>
+                                        <Typography>{`${creatures[creatureName].requiredTimeEorzea.endTimeHour}:00`}</Typography>
+                                    </CardContent>
+                                </Card>
+                                <Card sx={{backgroundColor: grey[300], marginRight: "7px", width: "33%"}}>
+                                    <CardContent>
+                                        <Typography variant="h6">Required Weather</Typography>
+                                        <Typography>{`${creatures[creatureName].requiredWeather}`}</Typography>
+                                    </CardContent>
+                                </Card>
+                            </SpawnConditionsDiv>
+                            <Card sx={{marginTop: "7px", backgroundColor: grey[300]}}>
+                                <CssBaseline/>
+                                <CardHeader variant="h5" title="Future Spawn Times"/>
+                                <CardContent sx={{maxHeight: "150px", overflowY: "auto"}}>
+                                    {creatureSpawns[creatureName].map(spawn => 
+                                        <Typography key={spawn.startTime.toISO()}>
+                                            {`${spawn.startTime.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}`}
+                                        </Typography>
+                                    )}
+                                </CardContent>
+                            </Card>
                         </AccordionDetails>
                     </Accordion>    
                 )}
