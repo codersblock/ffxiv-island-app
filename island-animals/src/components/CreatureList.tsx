@@ -29,6 +29,21 @@ export default function CreatureList() {
         justifyContent: "flex-start"
     })
 
+    const TimeDiv = styled("div")({
+        display: "flex",
+        flexDirection: "column",
+        alignContent: "flex-start",
+        width: "20%"
+    })
+
+    const AttributeDiv = styled("div")((props) => ({
+        display: "flex",
+        flexDirection: "column",
+        alignContent: "flex-start",
+        width: "15%",
+        [props.theme.breakpoints.down('sm')]: { display: "none" }
+    }))
+
     const SpawnConditionsDiv = styled("div")((props) => ({
         width: "100%",
         display: "flex",
@@ -77,12 +92,18 @@ export default function CreatureList() {
                         <AccordionSummary expandIcon={<ExpandMoreIcon/>} sx={(theme) => ({
                             backgroundColor: (creatureSpawns[creatureName][0]?.startTime < DateTime.now() && creatureSpawns[creatureName][0].endTime > DateTime.now()) ? green[200] : theme.palette.background.paper,
                         })}>
-                            <SummaryDiv >
+                            <SummaryDiv>
                                 <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { width: "50%"}, width: "20%"})}>{`${creatureName}`}</Typography>
-                                <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { display: "none" }, width: "10%"})}>{`${creatures[creatureName].type}`}</Typography>
-                                <Typography sx={(theme) => ({[theme.breakpoints.down('md')]: { display: "none" }, width: "9%"})}>{`[${creatures[creatureName].coordinates.x}, ${creatures[creatureName].coordinates.y}]`}</Typography>
+                                <AttributeDiv>
+                                    <Typography>{`${creatures[creatureName].type}`}</Typography>
+                                    <Typography>{`[x:${creatures[creatureName].coordinates.x} y:${creatures[creatureName].coordinates.y}]`}</Typography>
+                                </AttributeDiv>
                                 <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { display: "none" }, width: "12%"})}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString({weekday: "short", month: "short", day: "2-digit"})}`}</Typography>
-                                <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { display: "none" }, width: "20%"})}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString(DateTime.TIME_SIMPLE)} to ${creatureSpawns[creatureName][0]?.endTime.toLocaleString(DateTime.TIME_SIMPLE)}`}</Typography>
+                                <TimeDiv>
+                                    <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { display: "none" },})}>{`${creatureSpawns[creatureName][0]?.startTime.toLocaleString({hour: "numeric", minute: "2-digit", second: "2-digit", timeZoneName: "short"})} -`}</Typography>
+                                    <Typography sx={(theme) => ({[theme.breakpoints.down('sm')]: { display: "none" },})}>{`${creatureSpawns[creatureName][0]?.endTime.toLocaleString({hour: "numeric", minute: "2-digit", second: "2-digit", timeZoneName: "short"})}`}</Typography>
+
+                                </TimeDiv>
                                 {buggedCreatures.includes(creatureName) && (<>
                                     <Tooltip title="A bug has been identified with this creature that requires you to be off the island when the weather changes in order for it to spawn.  For the best chance to spawn this creature, leave the island at the indicated time, and return only when the spawn window becomes active.">
                                         <WarningIcon sx={{width: "5%"}}color="error"/>

@@ -59,6 +59,6 @@ export class WeatherFinder {
 
     static getEorzeaHour(dateTime: DateTime): number {
         const secondsSinceEpoch = dateTime.toMillis() / 1000;
-        return (secondsSinceEpoch / EORZEA_HOUR_IN_SECONDS) % 24;
+        return Math.round(secondsSinceEpoch / EORZEA_HOUR_IN_SECONDS) % 24;
     }
 }
