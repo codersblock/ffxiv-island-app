@@ -1,7 +1,3 @@
-# Island App
-
-Repo for all my island related sites
-
 ## Island animals
 
 rare animal spawn tracker
